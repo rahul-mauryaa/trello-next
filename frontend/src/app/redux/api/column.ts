@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getCookie } from "cookies-next";
+import customFetchBase from "./customFetchBase";
 
 // import { getApiURL } from '@/utils/checkEnvironment';
 // import config from '@/config/default';
@@ -9,19 +10,19 @@ import { getCookie } from "cookies-next";
 
 const baseUrl = "http://localhost:5000/";
 
-const baseQuery = fetchBaseQuery({
-  baseUrl,
-  prepareHeaders: (headers, { getState }) => {
-    const tokenObject = JSON.parse(getCookie("token") as string); // Parse the token object from localStorage
-    const accessToken = tokenObject?.accessToken; // Access the accessToken property from the token object
-    // Set the authorization header with the access token
-    headers.set("Authorization", `Bearer ${accessToken}`);
-    return headers;
-  },
-});
+// const baseQuery = fetchBaseQuery({
+//   baseUrl,
+//   prepareHeaders: (headers, { getState }) => {
+//     const tokenObject = JSON.parse(getCookie("token") as string); // Parse the token object from localStorage
+//     const accessToken = tokenObject?.accessToken; // Access the accessToken property from the token object
+//     // Set the authorization header with the access token
+//     headers.set("Authorization", `Bearer ${accessToken}`);
+//     return headers;
+//   },
+// });
 
 const columnApi = createApi({
-  baseQuery,
+  baseQuery: customFetchBase,
   reducerPath: "columnApi",
   keepUnusedDataFor: 30,
   tagTypes: ["getAllColumns", "getcolumns"],

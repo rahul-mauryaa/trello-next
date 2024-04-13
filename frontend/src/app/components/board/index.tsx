@@ -15,7 +15,7 @@ import useHandleToken from "@/app/hooks/useHandleToken";
 const Board = (): JSX.Element => {
   const params = useParams();
   const id = params?.id;
-  const [board, setBoard] = useState([]);
+  const [board, setBoard] = useState<any>([]);
   console.log(board, "board");
   const [trigger, result, lastPromiseInfo] = useLazyGetBoardByIdQuery();
   const { handleExpire } = useHandleToken();
@@ -39,15 +39,9 @@ const Board = (): JSX.Element => {
     }
   }, [bordByid, isLoading]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      handleExpire();
-    }, 1000);
-  }, []);
-
   return (
     <Box
-      backgroundImage={`url('${""}')`}
+      backgroundImage={`url('${board[0]?.backgroundImage}')`}
       backgroundPosition="center"
       h="100vh"
       backgroundRepeat="no-repeat"

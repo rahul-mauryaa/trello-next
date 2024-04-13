@@ -13,8 +13,6 @@ import { usePathname, useRouter } from "next/navigation";
 import useHandleToken from "@/app/hooks/useHandleToken";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { handleExpire } = useHandleToken();
-
   const sidebarMenu = [
     { path: "/home", buttonName: "Home", page: "home", icon: AiOutlineHome },
     {
@@ -38,11 +36,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   ];
 
   const pathname = usePathname();
-
-  useEffect(() => {
-    console.log(pathname, "pathname");
-    handleExpire();
-  }, [pathname]);
 
   return (
     <div>

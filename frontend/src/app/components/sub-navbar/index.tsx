@@ -24,14 +24,8 @@ const SubNavbar = ({ board }: any): JSX.Element => {
     return (
       <>
         <Tooltip label={users.username} aria-label="A tooltip">
-          <Avatar
-            size="sm"
-            name={users.username}
-            mr="5px"
-            src="https://bit.ly/tioluwani-kolawole"
-          />
+          <Avatar size="sm" name={users.username} mr="5px" />
         </Tooltip>
-        ;
       </>
     );
   };
