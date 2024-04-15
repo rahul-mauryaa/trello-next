@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, FC } from "react";
+import React, { useState, FC, useEffect } from "react";
 import { Box, useDisclosure } from "@chakra-ui/react";
 import AddColumnButton from "@/app/components/board/columns/buttons/add-column-button";
 import CardDetailsModal from "@/app/components/board/columns/modals/card-details-modal";
@@ -17,48 +17,73 @@ import { useDispatch } from "react-redux";
 
 import shortId from "shortid";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import { useAppSelector } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import {
+  useLazyGetAllColumnsQuery,
+  useCreateColumnsMutation,
+} from "@/app/redux/api/columnApi";
+import { resetColumns, setColumns } from "@/app/redux/slice/columnSlice";
+import { useGetAllCardsQuery } from "@/app/redux/api/cardApi";
+import { setCards } from "@/app/redux/slice/cardSlice";
+import { toast } from "react-toastify";
 
-const BoardColumns: FC = (): JSX.Element => {
-  const dispatch = useDispatch();
+const BoardColumns: FC = ({ board }: any): JSX.Element => {
+  const boardId = board && board[0]?._id;
+  const dispatch = useAppDispatch();
+  const [trigger, result, lastPromiseInfo] = useLazyGetAllColumnsQuery();
 
-  // const columns = useAppSelector((state) => state.columns.columns);
-  // const cards = useAppSelector((state) => state.cards.cards);
-  const columns = [
-    {
-      _id: "6610cabf40f47793f8ee2f49",
-      boardId: "vheA1N9be",
-      boardName: null,
-      columnName: "Add title",
-      dateCreated: "4/8/2024, 9:28:02 AM",
-      userId: "_rajoA53Q",
-      sequence: 1,
-    },
-  ];
-  const cards = [
-    {
-      _id: "3zk4GmbUX",
-      boardId: "vheA1N9be",
-      columnId: "6610cabf40f47793f8ee2f49",
-      title: "Add title",
-      type: "",
-      dateCreated: "4/8/2024, 9:28:57 AM",
-      userId: "_rajoA53Q",
-      sequence: 1,
-      description: "",
-    },
-    {
-      _id: "etrytytu",
-      boardId: "fdfdfd",
-      columnId: "6610cabf40f47793f8ee2f49",
-      title: "Add title",
-      type: "",
-      dateCreated: "4/8/2024, 9:28:57 AM",
-      userId: "_rajoA53Q",
-      sequence: 1,
-      description: "",
-    },
-  ];
+  const {
+    data: columnData,
+    error: columnerror,
+    isLoading: columnisLoading,
+  } = result;
+
+  const {
+    data: cardData,
+    isLoading: cardisLoading,
+    error: cardError,
+  } = useGetAllCardsQuery();
+
+  const [createColumns, { isLoading: ccIsLoading }] =
+    useCreateColumnsMutation();
+
+  const columns = useAppSelector((state) => state.column.columns);
+  const cards = useAppSelector((state) => state.card.cards);
+  // const columns = [
+  //   {
+  //     _id: "6610cabf40f47793f8ee2f49",
+  //     boardId: "vheA1N9be",
+  //     boardName: null,
+  //     columnName: "Add title",
+  //     dateCreated: "4/8/2024, 9:28:02 AM",
+  //     userId: "_rajoA53Q",
+  //     sequence: 1,
+  //   },
+  // ];
+  // const cards = [
+  //   {
+  //     _id: "3zk4GmbUX",
+  //     boardId: "vheA1N9be",
+  //     columnId: "6610cabf40f47793f8ee2f49",
+  //     title: "Add title",
+  //     type: "",
+  //     dateCreated: "4/8/2024, 9:28:57 AM",
+  //     userId: "_rajoA53Q",
+  //     sequence: 1,
+  //     description: "",
+  //   },
+  //   {
+  //     _id: "etrytytu",
+  //     boardId: "fdfdfd",
+  //     columnId: "6610cabf40f47793f8ee2f49",
+  //     title: "Add title",
+  //     type: "",
+  //     dateCreated: "4/8/2024, 9:28:57 AM",
+  //     userId: "_rajoA53Q",
+  //     sequence: 1,
+  //     description: "",
+  //   },
+  // ];
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [cardDetail, setCardDetail] = useState<any>({
     _id: "",
@@ -67,21 +92,22 @@ const BoardColumns: FC = (): JSX.Element => {
   });
 
   const showCardDetail = (cardId: string) => {
-    const card = cards.filter((card) => card._id === cardId);
+    const card = cards.filter((card: any) => card._id === cardId);
 
     setCardDetail(card[0]);
     onOpen();
   };
 
   const addColumn = async () => {
-    const columnId = shortId.generate();
-
+    await createColumns({ boardId: board[0]?._id });
     // await dispatch(addColumnToBoard(columnId));
     // await dispatch(fetchColumns());
   };
 
   const filterCards = (columnId: string) => {
-    const filteredCards = cards.filter((card) => card.columnId === columnId);
+    const filteredCards = cards.filter(
+      (card: any) => card.columnId === columnId
+    );
     return filteredCards;
   };
 
@@ -103,16 +129,16 @@ const BoardColumns: FC = (): JSX.Element => {
 
     // If card is being dragged
     if (type === "card") {
-      // await saveCardSequence(
-      //   destination.index,
-      //   destination.droppableId,
-      //   draggableId
-      // );
+      await saveCardSequence(
+        destination.index,
+        destination.droppableId,
+        draggableId
+      );
     }
 
     // If column is being dragged
     if (type === "column") {
-      // await saveColumnSequence(destination.index, draggableId);
+      await saveColumnSequence(destination.index, draggableId);
     }
   };
 
@@ -122,9 +148,12 @@ const BoardColumns: FC = (): JSX.Element => {
     cardId: string
   ) => {
     const cardsFromColumn = cards.filter(
-      (card) => card.columnId === destinationColumnId && card._id !== cardId
+      (card: any) =>
+        card.columnId === destinationColumnId && card._id !== cardId
     );
-    const sortedCards = cardsFromColumn.sort((a, b) => a.sequence - b.sequence);
+    const sortedCards = cardsFromColumn.sort(
+      (a: any, b: any) => a.sequence - b.sequence
+    );
 
     let sequence =
       destinationIndex === 0
@@ -162,10 +191,12 @@ const BoardColumns: FC = (): JSX.Element => {
     columnId: string
   ) => {
     // Remove the column which is dragged from the list
-    const filteredColumns = columns.filter((column) => column._id !== columnId);
+    const filteredColumns = columns.filter(
+      (column: any) => column._id !== columnId
+    );
 
     const sortedColumns = filteredColumns.sort(
-      (a, b) => a.sequence - b.sequence
+      (a: any, b: any) => a.sequence - b.sequence
     );
 
     let sequence =
@@ -201,6 +232,31 @@ const BoardColumns: FC = (): JSX.Element => {
     window.location.reload();
   };
 
+  useEffect(() => {
+    if (boardId) {
+      trigger(boardId);
+    }
+  }, [boardId]);
+
+  useEffect(() => {
+    if (columnData && !columnisLoading) {
+      dispatch(setColumns(columnData));
+    }
+  }, [columnData, columnisLoading]);
+
+  useEffect(() => {
+    if (columnerror) {
+      toast.error((columnerror as unknown as any).data.message);
+      dispatch(resetColumns());
+    }
+  }, [columnerror]);
+
+  useEffect(() => {
+    if (cardData && !cardisLoading) {
+      dispatch(setCards(cardData));
+    }
+  }, [cardData, cardisLoading]);
+
   return (
     <Box
       display="block"
@@ -223,7 +279,7 @@ const BoardColumns: FC = (): JSX.Element => {
               overflowY="auto"
             >
               {columns &&
-                columns.map((column, index) => (
+                columns.map((column: any, index: number) => (
                   <Column
                     key={column._id}
                     column={column}
@@ -234,7 +290,10 @@ const BoardColumns: FC = (): JSX.Element => {
                   />
                 ))}
               {provided.placeholder}
-              <AddColumnButton addColumn={addColumn} />
+              <AddColumnButton
+                addColumn={addColumn}
+                isLoadingColumn={ccIsLoading}
+              />
             </Box>
           )}
         </Droppable>

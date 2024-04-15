@@ -14,9 +14,10 @@ export function middleware(req: NextRequest, res: NextResponse) {
     const absoluteURL = new URL("/", req.nextUrl.origin);
     return NextResponse.redirect(absoluteURL.toString());
   } else if (
-    (isAuthenticated && req.nextUrl.pathname === "/login") ||
-    req.nextUrl.pathname === "/signup" ||
-    req.nextUrl.pathname === "/"
+    isAuthenticated &&
+    (req.nextUrl.pathname === "/login" ||
+      req.nextUrl.pathname === "/signup" ||
+      req.nextUrl.pathname === "/")
   ) {
     // If authenticated user tries to access login route, redirect them to home
     const absoluteURL = new URL("/home", req.nextUrl.origin);

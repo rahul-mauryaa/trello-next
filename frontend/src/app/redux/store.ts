@@ -1,8 +1,14 @@
 import { configureStore, combineReducers, AnyAction } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 // api imports
-import { authApi, boardApi, userApi } from "@/app/redux/api";
-import { authReducer, boardReducer } from "./slice";
+import {
+  authApi,
+  boardApi,
+  userApi,
+  columnApi,
+  cardApi,
+} from "@/app/redux/api";
+import { authReducer, boardReducer, cardReducer, columnReducer } from "./slice";
 import {
   PersistConfig,
   persistReducer,
@@ -42,16 +48,26 @@ type RootReducer = ReturnType<typeof rootReducer>;
 const rootReducer = combineReducers({
   auth: authReducer,
   board: boardReducer,
+  column: columnReducer,
+  card: cardReducer,
   [authApi.reducerPath]: authApi.reducer,
   [boardApi.reducerPath]: boardApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
+  [columnApi.reducerPath]: columnApi.reducer,
+  [cardApi.reducerPath]: cardApi.reducer,
 });
 
 const config: PersistConfig<any> = {
   key: "root",
   storage,
-  blacklist: [authApi.reducerPath, boardApi.reducerPath, userApi.reducerPath],
-  whitelist: ["auth", "board"],
+  blacklist: [
+    authApi.reducerPath,
+    boardApi.reducerPath,
+    userApi.reducerPath,
+    columnApi.reducerPath,
+    cardApi.reducerPath,
+  ],
+  whitelist: ["auth", "board", "column", "card"],
 };
 
 const peristedReducer = persistReducer<RootReducer, AnyAction>(
@@ -68,7 +84,13 @@ const createStore = () =>
         serializableCheck: {
           ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         },
-      }).concat([authApi.middleware, boardApi.middleware, userApi.middleware]);
+      }).concat([
+        authApi.middleware,
+        boardApi.middleware,
+        userApi.middleware,
+        columnApi.middleware,
+        cardApi.middleware,
+      ]);
     },
   });
 

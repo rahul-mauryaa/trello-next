@@ -63,7 +63,7 @@ const loginUser = asyncHandler(async (req, res) => {
         },
       },
       process.env.ACCESS_TOKEN_SECERT,
-      { expiresIn: "15m" }
+      { expiresIn: "1d" }
     );
     const expiresInMs = new Date().getTime() + 15 * 60 * 1000; // 15 minutes
 

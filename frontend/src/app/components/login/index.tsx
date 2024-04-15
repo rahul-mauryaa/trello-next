@@ -38,6 +38,7 @@ const LogIn = (): JSX.Element => {
   });
 
   const [loginuser, { data, error, isLoading }] = useLoginuserMutation();
+  console.log(isLoading, "loginisloading");
 
   const onSubmit = async (data: any) => {
     if (data) {
@@ -135,7 +136,7 @@ const LogIn = (): JSX.Element => {
               mt={4}
               bg="black"
               color="white"
-              disabled={isLoading}
+              isDisabled={isLoading}
               isLoading={isLoading}
               onClick={handleSubmit(onSubmit)}
             >

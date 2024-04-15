@@ -16,8 +16,9 @@ const Board = (): JSX.Element => {
   const params = useParams();
   const id = params?.id;
   const [board, setBoard] = useState<any>([]);
-  console.log(board, "board");
+
   const [trigger, result, lastPromiseInfo] = useLazyGetBoardByIdQuery();
+
   const { handleExpire } = useHandleToken();
   const {
     data: bordByid,
@@ -49,7 +50,7 @@ const Board = (): JSX.Element => {
     >
       <UserNavbar />
       <SubNavbar board={board} />
-      <BoardColumns />
+      <BoardColumns board={board} />
     </Box>
   );
 };

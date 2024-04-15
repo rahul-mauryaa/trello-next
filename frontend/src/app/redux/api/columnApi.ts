@@ -35,7 +35,7 @@ const columnApi = createApi({
     createColumns: build.mutation<any, any>({
       query: (data) => {
         return {
-          url: "api/bords",
+          url: "api/columns",
           body: data,
           method: "POST",
         };
@@ -45,25 +45,27 @@ const columnApi = createApi({
     updateColumns: build.mutation<any, any>({
       query: ({ data, id }) => {
         return {
-          url: `api/bords/${id}`,
+          url: `api/columns/${id}`,
           body: data,
           method: "PUT",
         };
       },
-      invalidatesTags: ["getcolumns"],
+      invalidatesTags: ["getAllColumns"],
     }),
     deleteColumns: build.mutation({
       query: (id) => {
         return {
-          url: `api/bords/${id}`,
+          url: `api/columns/${id}`,
           method: "DELETE",
         };
       },
+      invalidatesTags: ["getAllColumns"],
     }),
-    getColumns: build.query<any, any>({
-      query: (user_id) => {
+    getAllColumns: build.query<any, undefined | void>({
+      query: (id) => {
+        console.log(id, "borferuddddddddd");
         return {
-          url: `api/bords/?user_id=${user_id}`,
+          url: `api/columns/all?boardId=${id}`,
         };
       },
       providesTags: ["getAllColumns"],
@@ -79,6 +81,11 @@ const columnApi = createApi({
   }),
 });
 
-export const {} = columnApi;
+export const {
+  useLazyGetAllColumnsQuery,
+  useCreateColumnsMutation,
+  useDeleteColumnsMutation,
+  useUpdateColumnsMutation,
+} = columnApi;
 
 export default columnApi;

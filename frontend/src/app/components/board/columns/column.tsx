@@ -23,15 +23,29 @@ import { GrDrag } from "react-icons/gr";
 // import { addCard, fetchCards } from "@/src/slices/cards";
 import debounce from "lodash.debounce";
 import { useAppSelector } from "../../hooks";
+import {
+  useDeleteColumnsMutation,
+  useUpdateColumnsMutation,
+} from "@/app/redux/api/columnApi";
 // import { CardDetail } from '@/src/types/cards';
 // import { useAppSelector } from '@/src/hooks';
 
-const Column = ({ showCardDetail, column, index, id, cards }): JSX.Element => {
+const Column = ({
+  showCardDetail,
+  column,
+  index,
+  id,
+  cards,
+}: any): JSX.Element => {
   const dispatch = useDispatch();
   const [showEditBox, setEditBoxVisibility] = useState<boolean>(false);
   // const cardRequest = useAppSelector((state) => state.cards.isRequesting);
 
   const [columnName, setColumnName] = useState<string>(column.columnName);
+  const [deleteColumns] = useDeleteColumnsMutation();
+
+  const [updateColumns] = useUpdateColumnsMutation();
+
   const cardsInSortedSequence = cards.sort(
     //   (cardA: CardDetail, cardB: CardDetail) => cardA.sequence - cardB.sequence
     // );
@@ -88,7 +102,7 @@ const Column = ({ showCardDetail, column, index, id, cards }): JSX.Element => {
   };
 
   const handleColumnDelete = async () => {
-    // await dispatch(deleteColumn(id));
+    await deleteColumns(id);
     // await dispatch(fetchColumns());
   };
 
@@ -100,10 +114,9 @@ const Column = ({ showCardDetail, column, index, id, cards }): JSX.Element => {
   const nameChange = async (value: any) => {
     const data = {
       columnName: value,
-      columnId: column._id,
     };
 
-    // await dispatch(updateColumn(data));
+    await updateColumns({ data: data, id });
   };
 
   return (

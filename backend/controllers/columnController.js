@@ -15,25 +15,48 @@ const getColumn = asyncHandler(async (req, res) => {
 //@route POST /api/contacts
 //@access private
 const createColumn = asyncHandler(async (req, res) => {
-  const { boardId, sequence } = req.body;
-  if (!sequence || !boardId) {
+  const { boardId } = req.body;
+
+  if (!boardId) {
     res.status(400);
-    throw new Error("All fields are mandatory !");
+    throw new Error("Board ID is mandatory!");
   }
+
   try {
-    const ColumnData = await Column.create({
+    // Fetch the maximum sequence number for the given boardId
+    const maxSequenceColumn = await Column.findOne({ boardId }).sort({
+      sequence: -1,
+    });
+
+    let sequence = 1; // Default sequence if no columns exist for the board
+
+    if (maxSequenceColumn) {
+      sequence = maxSequenceColumn.sequence + 1; // Increment sequence
+    }
+
+    const columnData = await Column.create({
       boardId,
       user_id: req.user.id,
       sequence,
     });
-    res.status(201).json(ColumnData);
+
+    res.status(201).json(columnData);
   } catch (err) {
-    console.log(err, "err");
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 const getAllColumn = asyncHandler(async (req, res) => {
-  const ColumnsData = await Column.find({});
+  const board_id = req.query.boardId;
+  const ColumnsData = await Column.find({ boardId: board_id });
+
+  if (ColumnsData.length === 0) {
+    return res
+      .status(404)
+      .json({ message: "No records found for the specified board ID" });
+  }
+
   res.status(200).json(ColumnsData);
 });
 

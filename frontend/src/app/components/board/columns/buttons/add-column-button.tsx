@@ -5,9 +5,10 @@ import PropTypes from "prop-types";
 
 type Props = {
   addColumn: () => void;
+  isLoadingColumn: boolean;
 };
 
-const AddColumnButton: FC<Props> = ({ addColumn }) => {
+const AddColumnButton: FC<Props> = ({ addColumn, isLoadingColumn }) => {
   // const columnRequest = useAppSelector((state) => state.columns.isRequesting);
 
   return (
@@ -27,8 +28,8 @@ const AddColumnButton: FC<Props> = ({ addColumn }) => {
         backgroundColor="primary"
         color="black"
         onClick={addColumn}
-        // isLoading={columnRequest}
-        // disabled={columnRequest}
+        isLoading={isLoadingColumn}
+        disabled={isLoadingColumn}
         loadingText="Adding column"
       >
         + Add a Column
