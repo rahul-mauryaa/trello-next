@@ -60,7 +60,6 @@ const Boards = (): JSX.Element => {
 
   const handleCreate = async () => {
     await createBoard(values);
-
     onClose();
   };
 

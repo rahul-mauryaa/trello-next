@@ -59,6 +59,7 @@ const boardApi = createApi({
           method: "DELETE",
         };
       },
+      invalidatesTags: ["getAllBords"],
     }),
     getBoard: build.query<any, any>({
       query: (user_id) => {

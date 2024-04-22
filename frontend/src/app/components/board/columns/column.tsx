@@ -27,6 +27,7 @@ import {
   useDeleteColumnsMutation,
   useUpdateColumnsMutation,
 } from "@/app/redux/api/columnApi";
+import { useCreateCardsMutation } from "@/app/redux/api/cardApi";
 // import { CardDetail } from '@/src/types/cards';
 // import { useAppSelector } from '@/src/hooks';
 
@@ -35,6 +36,7 @@ const Column = ({
   column,
   index,
   id,
+  boardId,
   cards,
 }: any): JSX.Element => {
   const dispatch = useDispatch();
@@ -45,6 +47,8 @@ const Column = ({
   const [deleteColumns] = useDeleteColumnsMutation();
 
   const [updateColumns] = useUpdateColumnsMutation();
+
+  const [createCards] = useCreateCardsMutation();
 
   const cardsInSortedSequence = cards.sort(
     //   (cardA: CardDetail, cardB: CardDetail) => cardA.sequence - cardB.sequence
@@ -92,7 +96,7 @@ const Column = ({
   };
 
   const handleCardAdd = async () => {
-    // await dispatch(addCard(column._id));
+    await createCards({ boardId, columnId: id });
     // await dispatch(fetchCards());
   };
 

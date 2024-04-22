@@ -23,11 +23,16 @@ import {
   AiOutlineDelete,
   AiOutlineClose,
   AiOutlineLaptop,
+  AiOutlineEdit,
 } from "react-icons/ai";
 import { GrTextAlignFull } from "react-icons/gr";
 import CardLabel from "@/app/components/board/columns/modals/card-labels-menu";
 import QuillEditor from "@/app/components/quill-editor";
 import { AiOutlineDown } from "react-icons/ai";
+import {
+  useDeleteCardsMutation,
+  useUpdateCardsMutation,
+} from "@/app/redux/api/cardApi";
 
 // type Props = {
 //   onClose: () => void;
@@ -40,30 +45,32 @@ const CardDetailsModal: FC<any> = ({ onClose, isOpen, card }) => {
   const [title, setTitle] = useState(card?.title);
   const [description, setDescription] = useState(card?.description);
   const [assigned, assignUser] = useState(card?.assignedTo);
-
+  const [deleteCards, { isLoading: dcIsLoading }] = useDeleteCardsMutation();
+  const [updateCards, { isLoading: ucIsLoading }] = useUpdateCardsMutation();
   // const cardRequest = useAppSelector((state) => state.cards.isRequesting);
   // const cardDelete = useAppSelector((state) => state.cards.isDeleting);
   // const users = useAppSelector((state) => state.users.users);
 
   const handleCardDelete = async () => {
+    await deleteCards(card?._id);
     // await dispatch(deleteCard(card._id));
     // await dispatch(fetchCards());
-
     onClose();
   };
 
-  const handleModalClose = async () => {
+  const handleCardUpdate = async () => {
     const data = {
-      _id: card._id,
       title,
       description,
       columnId: card.columnId,
       assignedTo: assigned,
     };
 
-    // await dispatch(updateCard(data));
-    // await dispatch(fetchCards());
+    await updateCards({ data, id: card?._id });
+    onClose();
+  };
 
+  const handleModalClose = async () => {
     onClose();
   };
 
@@ -88,7 +95,8 @@ const CardDetailsModal: FC<any> = ({ onClose, isOpen, card }) => {
           Assign To
         </MenuButton>
         <MenuList>
-          {/* {users.map((user, index) => (
+          {/* {
+            .map((user, index) => (
             <MenuItem key={index} onClick={() => handleClick(user._id)}>
               {user?.fullName}
             </MenuItem>
@@ -144,8 +152,8 @@ const CardDetailsModal: FC<any> = ({ onClose, isOpen, card }) => {
               size="xs"
               marginRight="1rem"
               onClick={handleCardDelete}
-              // disabled={cardDelete}
-              // isLoading={cardDelete}
+              disabled={dcIsLoading}
+              isLoading={ucIsLoading}
               loadingText="Deleting"
               bg="red.500"
               color="white"
@@ -157,9 +165,25 @@ const CardDetailsModal: FC<any> = ({ onClose, isOpen, card }) => {
             </Button>
             <Button
               size="xs"
+              marginRight="1rem"
+              onClick={handleCardUpdate}
+              disabled={dcIsLoading}
+              isLoading={ucIsLoading}
+              loadingText="Editing"
+              bg="green.500"
+              color="white"
+              _hover={{
+                backgroundColor: "green.600",
+              }}
+            >
+              <AiOutlineEdit />
+            </Button>
+
+            <Button
+              size="xs"
               onClick={handleModalClose}
-              // disabled={cardRequest}
-              // isLoading={cardRequest}
+              disabled={ucIsLoading}
+              isLoading={ucIsLoading}
               loadingText="Updating"
             >
               <AiOutlineClose /> Close

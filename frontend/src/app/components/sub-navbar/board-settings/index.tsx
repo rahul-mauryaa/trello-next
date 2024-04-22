@@ -22,12 +22,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useDispatch } from "react-redux";
-// import {
-//   updateBoardDetail,
-//   saveBoard,
-//   fetchBoard,
-//   deleteBoard,
-// } from "@/src/slices/board";
+
 import { AiFillSetting, AiOutlineDelete, AiOutlineCheck } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import {
@@ -54,10 +49,6 @@ const BoardSettings = ({ board }: any): JSX.Element => {
 
   const handleDelete = async () => {
     deleteBoard(board[0]?._id);
-    // await dispatch(deleteBoard());
-    // if (boardDetail.status === "success") {
-    //   router.push("/boards");
-    // }
   };
 
   const handleChange = (e: any) => {
@@ -75,7 +66,7 @@ const BoardSettings = ({ board }: any): JSX.Element => {
   useEffect(() => {
     if (delBoard && !delIsLoading) {
       toast.success("Board delete Successfully");
-      router.push("/boards");
+      router.replace("/boards");
     }
   }, [delIsLoading, delBoard]);
 
@@ -129,7 +120,7 @@ const BoardSettings = ({ board }: any): JSX.Element => {
                       _hover={{
                         backgroundColor: "red.600",
                       }}
-                      // isLoading={boardDelete}
+                      isLoading={delIsLoading}
                       loadingText="Deleting"
                     >
                       <AiOutlineDelete /> &nbsp;Delete

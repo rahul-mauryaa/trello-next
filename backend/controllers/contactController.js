@@ -28,33 +28,29 @@ const createContact = asyncHandler(async (req, res) => {
   res.status(201).json(contact);
 });
 
-
-const getAllContacts = asyncHandler(async(req,res)=>{
+const getAllContacts = asyncHandler(async (req, res) => {
   const contacts = await Contact.find({});
   res.status(200).json(contacts);
-})
+});
 
 //@desc Get contact
 //@route GET /api/contacts/:id
 //@access private
 const getContact = asyncHandler(async (req, res) => {
-  
-    const contact = await Contact.findById(req.params.id);
-    if (!contact) {
-      res.status(404);
-      throw new Error("Contact not found");
-    }
-    res.status(200).json(contact);
-  
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
+  res.status(200).json(contact);
 });
 
 //@desc Update contact
 //@route PUT /api/contacts/:id
 //@access private
 const updateContact = asyncHandler(async (req, res) => {
-  console.log(req.params.id,"params id");
   const contact = await Contact.findById(req.params.id);
-  console.log(contact,"contact")
+
   if (!contact) {
     res.status(404);
     throw new Error("Contact not found");

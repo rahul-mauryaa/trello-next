@@ -64,7 +64,6 @@ const getAllBord = asyncHandler(async (req, res) => {
 //@route PUT /api/contacts/:id
 //@access private
 const updateBoard = asyncHandler(async (req, res) => {
-  console.log(req.params.id, "params id");
   const boads = await Bord.findById(req.params.id);
 
   if (!boads) {

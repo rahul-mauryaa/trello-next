@@ -21,13 +21,21 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import {
   useLazyGetAllColumnsQuery,
   useCreateColumnsMutation,
+  useUpdateColumnsMutation,
 } from "@/app/redux/api/columnApi";
 import { resetColumns, setColumns } from "@/app/redux/slice/columnSlice";
-import { useGetAllCardsQuery } from "@/app/redux/api/cardApi";
+import {
+  useGetAllCardsQuery,
+  useUpdateCardsMutation,
+} from "@/app/redux/api/cardApi";
 import { setCards } from "@/app/redux/slice/cardSlice";
 import { toast } from "react-toastify";
 
-const BoardColumns: FC = ({ board }: any): JSX.Element => {
+interface BoardColumnsProps {
+  board: any; // You should replace 'any' with the actual type of your board object
+}
+
+const BoardColumns: React.FC<BoardColumnsProps> = ({ board }) => {
   const boardId = board && board[0]?._id;
   const dispatch = useAppDispatch();
   const [trigger, result, lastPromiseInfo] = useLazyGetAllColumnsQuery();
@@ -47,43 +55,10 @@ const BoardColumns: FC = ({ board }: any): JSX.Element => {
   const [createColumns, { isLoading: ccIsLoading }] =
     useCreateColumnsMutation();
 
+  const [updateCards] = useUpdateCardsMutation();
+  const [updateColumns] = useUpdateColumnsMutation();
   const columns = useAppSelector((state) => state.column.columns);
   const cards = useAppSelector((state) => state.card.cards);
-  // const columns = [
-  //   {
-  //     _id: "6610cabf40f47793f8ee2f49",
-  //     boardId: "vheA1N9be",
-  //     boardName: null,
-  //     columnName: "Add title",
-  //     dateCreated: "4/8/2024, 9:28:02 AM",
-  //     userId: "_rajoA53Q",
-  //     sequence: 1,
-  //   },
-  // ];
-  // const cards = [
-  //   {
-  //     _id: "3zk4GmbUX",
-  //     boardId: "vheA1N9be",
-  //     columnId: "6610cabf40f47793f8ee2f49",
-  //     title: "Add title",
-  //     type: "",
-  //     dateCreated: "4/8/2024, 9:28:57 AM",
-  //     userId: "_rajoA53Q",
-  //     sequence: 1,
-  //     description: "",
-  //   },
-  //   {
-  //     _id: "etrytytu",
-  //     boardId: "fdfdfd",
-  //     columnId: "6610cabf40f47793f8ee2f49",
-  //     title: "Add title",
-  //     type: "",
-  //     dateCreated: "4/8/2024, 9:28:57 AM",
-  //     userId: "_rajoA53Q",
-  //     sequence: 1,
-  //     description: "",
-  //   },
-  // ];
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [cardDetail, setCardDetail] = useState<any>({
     _id: "",
@@ -161,11 +136,10 @@ const BoardColumns: FC = ({ board }: any): JSX.Element => {
         : sortedCards[destinationIndex - 1].sequence + 1;
 
     const patchCard = {
-      _id: cardId,
       sequence,
       columnId: destinationColumnId,
     };
-
+    updateCards({ data: patchCard, id: cardId });
     // This is just for updating local state so that there won't be any lag after saving the sequence and fetching again
     // Now we don't to fetch the cards again
     // await dispatch(updateCardSequenceToLocalState(patchCard));
@@ -176,11 +150,10 @@ const BoardColumns: FC = ({ board }: any): JSX.Element => {
       sequence += 1;
 
       const patchCard = {
-        _id: card._id,
         sequence,
         columnId: destinationColumnId,
       };
-
+      updateCards({ data: patchCard, id: card?._id });
       // await dispatch(updateCardSequenceToLocalState(patchCard));
       // await dispatch(updateCardSequence(patchCard));
     }
@@ -205,9 +178,10 @@ const BoardColumns: FC = ({ board }: any): JSX.Element => {
         : sortedColumns[destinationIndex - 1].sequence + 1;
 
     const patchColumn = {
-      _id: columnId,
       sequence,
     };
+
+    await updateColumns({ data: patchColumn, id: columnId });
 
     // This is just for updating local state so that there won't be any lag after saving the sequence and fetching again
     // await dispatch(updateColumnSequenceToLocalState(patchColumn));
@@ -219,9 +193,9 @@ const BoardColumns: FC = ({ board }: any): JSX.Element => {
       sequence += 1;
 
       const patchColumn = {
-        _id: column._id,
         sequence,
       };
+      await updateColumns({ data: patchColumn, id: column?._id });
 
       // await dispatch(updateColumnSequenceToLocalState(patchColumn));
       // await dispatch(updateColumnSequence(patchColumn));
@@ -284,6 +258,7 @@ const BoardColumns: FC = ({ board }: any): JSX.Element => {
                     key={column._id}
                     column={column}
                     id={column._id}
+                    boardId={boardId}
                     index={index}
                     cards={filterCards(column._id)}
                     showCardDetail={showCardDetail}

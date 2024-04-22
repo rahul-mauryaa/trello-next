@@ -5,12 +5,9 @@ import UserNavbar from "@/app/components/user-navbar";
 import SubNavbar from "@/app/components/sub-navbar";
 
 import BoardColumns from "@/app/components/board/columns";
-import PropType from "prop-types";
-import { useAppSelector } from "../hooks";
 import { useLazyGetBoardByIdQuery } from "@/app/redux/api/boardApi";
 
 import { useParams } from "next/navigation";
-import useHandleToken from "@/app/hooks/useHandleToken";
 
 const Board = (): JSX.Element => {
   const params = useParams();
@@ -19,7 +16,6 @@ const Board = (): JSX.Element => {
 
   const [trigger, result, lastPromiseInfo] = useLazyGetBoardByIdQuery();
 
-  const { handleExpire } = useHandleToken();
   const {
     data: bordByid,
     error: bordByiderror,

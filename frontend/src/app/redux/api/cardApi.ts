@@ -45,7 +45,7 @@ const cardApi = createApi({
           method: "PUT",
         };
       },
-      invalidatesTags: ["getcards"],
+      invalidatesTags: ["getAllCards"],
     }),
     deleteCards: build.mutation({
       query: (id) => {
@@ -54,6 +54,7 @@ const cardApi = createApi({
           method: "DELETE",
         };
       },
+      invalidatesTags: ["getAllCards"],
     }),
     getAllCards: build.query<any, undefined | void>({
       query: () => {
@@ -74,6 +75,11 @@ const cardApi = createApi({
   }),
 });
 
-export const { useGetAllCardsQuery } = cardApi;
+export const {
+  useGetAllCardsQuery,
+  useCreateCardsMutation,
+  useDeleteCardsMutation,
+  useUpdateCardsMutation,
+} = cardApi;
 
 export default cardApi;

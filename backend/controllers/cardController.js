@@ -17,11 +17,21 @@ const getCard = asyncHandler(async (req, res) => {
 //@access private
 const createCard = asyncHandler(async (req, res) => {
   const { boardId, sequence, columnId } = req.body;
-  if (!sequence || !boardId || !columnId) {
+  if (!boardId || !columnId) {
     res.status(400);
     throw new Error("All fields are mandatory !");
   }
   try {
+    // Fetch the maximum sequence number for the given boardId
+    const maxSequenceCard = await Card.findOne({ boardId, columnId }).sort({
+      sequence: -1,
+    });
+
+    let sequence = 1; // Default sequence if no card exist for the board
+
+    if (maxSequenceCard) {
+      sequence = maxSequenceCard.sequence + 1; // Increment sequence
+    }
     const CardData = await Card.create({
       boardId,
       columnId,
