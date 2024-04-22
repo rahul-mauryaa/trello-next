@@ -8,7 +8,7 @@ import customFetchBase from "./customFetchBase";
 // import { GenericResponse } from '@/types/types';
 // import { Login, Profile } from '@/types/user.types';
 
-const baseUrl = "http://localhost:5000/";
+const baseUrl = process.env.backendUrl;
 
 // const baseQuery = fetchBaseQuery({
 //   baseUrl,

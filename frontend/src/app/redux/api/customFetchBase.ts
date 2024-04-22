@@ -11,7 +11,8 @@ import { logout } from "../slice/authSlice";
 // import config from "@/config/default";
 
 // const baseUrl = config.API_ENDPOINT;
-const baseUrl = "http://localhost:5000/";
+
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT;
 // Create a new mutex
 const mutex = new Mutex();
 
