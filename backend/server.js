@@ -4,9 +4,21 @@ const connectDb = require("./config/dbConnection");
 const errorHandler = require("./middleware/errorHandler");
 const dotenv = require("dotenv").config();
 const cors = require("cors");
+
 connectDb();
+
+const allowedOrigind = [
+  "https://trello-next-m7gx.vercel.app",
+  "http://localhost:3000",
+];
+
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigind,
+    credentials: true,
+  })
+);
 const port = process.env.PORT || 5000;
 
 app.use(cookieParser());
