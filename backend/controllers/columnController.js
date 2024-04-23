@@ -49,6 +49,7 @@ const createColumn = asyncHandler(async (req, res) => {
 
 const getAllColumn = asyncHandler(async (req, res) => {
   const board_id = req.query.boardId;
+
   const ColumnsData = await Column.find({ boardId: board_id });
 
   if (ColumnsData.length === 0) {

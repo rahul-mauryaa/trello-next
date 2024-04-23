@@ -63,7 +63,6 @@ const columnApi = createApi({
     }),
     getAllColumns: build.query<any, undefined | void>({
       query: (id) => {
-        console.log(id, "borferuddddddddd");
         return {
           url: `api/columns/all?boardId=${id}`,
         };

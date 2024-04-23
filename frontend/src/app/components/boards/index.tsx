@@ -99,7 +99,8 @@ const Boards = (): JSX.Element => {
             <ModalFooter>
               <Button
                 onClick={handleCreate}
-                isLoading={false}
+                isLoading={cbisLoading}
+                isDisabled={cbisLoading}
                 loadingText="Creating board"
               >
                 Create

@@ -55,7 +55,7 @@ const SubNavbar = (): JSX.Element => {
               colorScheme="blue"
               onClick={handleSave}
               loadingText="Saving"
-              isLoading={board.isLoading}
+              // isLoading={board.isLoading}
             >
               Save
             </Button>

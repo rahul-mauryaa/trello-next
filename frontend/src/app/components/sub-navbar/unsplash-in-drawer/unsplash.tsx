@@ -1,4 +1,6 @@
+"use client";
 import React, { useState, useEffect } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { createApi } from "unsplash-js";
 // import { updateBoardDetail } from '@/src/slices/board';
 import { useDispatch } from "react-redux";
@@ -9,16 +11,23 @@ import {
   InputRightElement,
   Button,
 } from "@chakra-ui/react";
+import { useUpdateBoardMutation } from "@/app/redux/api/boardApi";
 
 const Unsplash = () => {
   const [value, setValue] = useState("");
+  const unsplashKey = process.env.NEXT_PUBLIC_UNSPLASH_KEY as string;
+
+  const params = useParams();
+  const BoardId = params && params.id;
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [updateBoardDetail, { data: ubData, isLoading: ubIsLOading }] =
+    useUpdateBoardMutation();
 
   const dispatch = useDispatch();
   const unsplash = createApi({
-    accessKey: "https://api.unsplash.com/search/photos",
+    accessKey: unsplashKey,
   });
 
   useEffect(() => {
@@ -56,17 +65,14 @@ const Unsplash = () => {
     const response = (imagesSet as unknown as any).response.results;
     const sumAllImages = images.concat(response);
     setImages(sumAllImages);
-
     setIsLoading(false);
   };
 
   const handleImageClick = async (imageURL: any) => {
     const data = {
-      type: "backgroundImage",
-      value: imageURL,
+      backgroundImage: imageURL,
     };
-
-    // await dispatch(updateBoardDetail(data));
+    updateBoardDetail({ data, id: BoardId });
   };
 
   return (
@@ -92,25 +98,26 @@ const Unsplash = () => {
         marginTop="20px"
         justifyContent="center"
       >
-        {images.map((item: any, index: number) => {
-          return (
-            <Box
-              key={index}
-              role="button"
-              cursor="pointer"
-              backgroundImage={`url('${item.urls.small}')`}
-              backgroundSize="cover"
-              backgroundRepeat="no-repeat"
-              mr="10px"
-              mb="10px"
-              borderRadius="lg"
-              height="150px"
-              width="150px"
-              src={item.urls.small}
-              onClick={() => handleImageClick(item.urls.regular)}
-            />
-          );
-        })}
+        {images &&
+          images.map((item: any, index: number) => {
+            return (
+              <Box
+                key={index}
+                role="button"
+                cursor="pointer"
+                backgroundImage={`url('${item.urls.small}')`}
+                backgroundSize="cover"
+                backgroundRepeat="no-repeat"
+                mr="10px"
+                mb="10px"
+                borderRadius="lg"
+                height="150px"
+                width="150px"
+                src={item.urls.small as any}
+                onClick={() => handleImageClick(item.urls.regular)}
+              />
+            );
+          })}
       </Box>
       <Box display="flex" justifyContent="center" mt="20px">
         <Button

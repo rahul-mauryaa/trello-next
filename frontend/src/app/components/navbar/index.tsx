@@ -17,7 +17,7 @@ const NavBar: FC<IProps> = ({ bg }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const User = useAppSelector((state: any) => state.auth.users.id);
-  console.log(User, "user");
+
   const logoutFunc = async () => {
     deleteCookie("token");
     dispatch(logout());

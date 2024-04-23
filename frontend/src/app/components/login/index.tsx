@@ -38,7 +38,6 @@ const LogIn = (): JSX.Element => {
   });
 
   const [loginuser, { data, error, isLoading }] = useLoginuserMutation();
-  console.log(isLoading, "loginisloading");
 
   const onSubmit = async (data: any) => {
     if (data) {

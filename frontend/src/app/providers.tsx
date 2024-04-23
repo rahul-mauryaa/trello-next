@@ -27,3 +27,24 @@ export function ProvidersPersistRedux({
 export function Tostifycontainer() {
   return <ToastContainer />;
 }
+
+import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+import React from "react";
+
+export const ProvidersProgress = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  return (
+    <>
+      {children}
+      <ProgressBar
+        height="4px"
+        color="#0079bf"
+        options={{ showSpinner: true }}
+        shallowRouting
+      />
+    </>
+  );
+};
