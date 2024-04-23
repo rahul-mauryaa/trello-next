@@ -8,7 +8,7 @@ const cors = require("cors");
 connectDb();
 
 const allowedOrigind = [
-  "https://trello-next-m7gx.vercel.app",
+  "https://trello-next-app14.vercel.app",
   "http://localhost:3000",
 ];
 
@@ -24,7 +24,6 @@ const port = process.env.PORT || 5000;
 app.use(cookieParser());
 app.use(express.json());
 
-app.use("/api/contacts", require("./routes/contactRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/bords", require("./routes/bordsRoutes"));
 app.use("/api/columns", require("./routes/columnRoutes"));
