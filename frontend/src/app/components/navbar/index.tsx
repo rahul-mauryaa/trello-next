@@ -1,5 +1,5 @@
 "use client";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { Button, Image, Flex, Box, Spacer } from "@chakra-ui/react";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -7,7 +7,7 @@ import { GrLogout } from "react-icons/gr";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { logout } from "@/app/redux/slice/authSlice";
-import { deleteCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 
 type IProps = {
   bg?: string;
@@ -24,6 +24,13 @@ const NavBar: FC<IProps> = ({ bg }) => {
     toast.success("Logout Successfully");
     router.replace("/login");
   };
+
+  useEffect(() => {
+    if (!getCookie("token")) {
+      deleteCookie("token");
+      dispatch(logout());
+    }
+  }, []);
 
   const renderButtons = () => {
     if (User) {

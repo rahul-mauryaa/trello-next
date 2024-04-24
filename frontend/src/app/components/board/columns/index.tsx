@@ -55,7 +55,7 @@ const BoardColumns: React.FC<BoardColumnsProps> = ({ board }) => {
   const [createColumns, { isLoading: ccIsLoading }] =
     useCreateColumnsMutation();
 
-  const [updateCards] = useUpdateCardsMutation();
+  const [updateCards, { isLoading: ucIsLoading }] = useUpdateCardsMutation();
   const [updateColumns] = useUpdateColumnsMutation();
   const columns = useAppSelector((state) => state.column.columns);
   const cards = useAppSelector((state) => state.card.cards);
