@@ -6,25 +6,41 @@ require("dotenv").config();
 const cors = require("cors");
 
 const allowedOrigins = [
-  "trello-next-vert.vercel.app",
-  "trello-next-git-main-rahulmauryaas-projects.vercel.app",
-  "trello-next-139zks25e-rahulmauryaas-projects.vercel.app",
+  "https://trello-next-vert.vercel.app",
+  "https://trello-next-git-main-rahulmauryaas-projects.vercel.app",
+  "https://trello-next-139zks25e-rahulmauryaas-projects.vercel.app",
   "http://localhost:3000",
 ];
 
 const app = express();
 
+// ✅ Proper CORS for Vercel + cookies
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      // ✅ allow server-to-server / Postman requests
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.log("Blocked by CORS:", origin);
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// ✅ Preflight (OPTIONS) handle
+app.options("*", cors());
 
 app.use(cookieParser());
 app.use(express.json());
 
-// ✅ connect db before routes (serverless safe)
+// ✅ DB connect
 connectDb();
 
 app.get("/", (req, res) => {
