@@ -98,7 +98,7 @@ const deleteCard = asyncHandler(async (req, res) => {
   if (cardData.user_id.toString() !== req.user.id) {
     res.status(403);
     throw new Error(
-      "User don't have permission to update other user columnDatas"
+      "User don't have permission to update other user columnData"
     );
   }
   await cardData.deleteOne({ _id: req.params.id });

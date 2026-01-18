@@ -2,34 +2,39 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const connectDb = require("./config/dbConnection");
 const errorHandler = require("./middleware/errorHandler");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const cors = require("cors");
 
-connectDb();
-
-const allowedOrigind = [
+const allowedOrigins = [
   "https://trello-next-app14.vercel.app",
   "http://localhost:3000",
 ];
 
 const app = express();
+
 app.use(
   cors({
-    origin: allowedOrigind,
+    origin: allowedOrigins,
     credentials: true,
   })
 );
-const port = process.env.PORT || 5000;
 
 app.use(cookieParser());
 app.use(express.json());
+
+// ✅ connect db before routes (serverless safe)
+connectDb();
+
+app.get("/", (req, res) => {
+  res.send("API running ✅");
+});
 
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/bords", require("./routes/bordsRoutes"));
 app.use("/api/columns", require("./routes/columnRoutes"));
 app.use("/api/cards", require("./routes/cardRoutes"));
+
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+// ✅ IMPORTANT: export app for Vercel
+module.exports = app;

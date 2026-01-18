@@ -8,8 +8,6 @@ import customFetchBase from "./customFetchBase";
 // import { GenericResponse } from '@/types/types';
 // import { Login, Profile } from '@/types/user.types';
 
-const baseUrl = process.env.backendUrl;
-
 // const baseQuery = fetchBaseQuery({
 //   baseUrl,
 //   prepareHeaders: (headers, { getState }) => {
