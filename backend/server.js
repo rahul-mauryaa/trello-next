@@ -6,7 +6,9 @@ require("dotenv").config();
 const cors = require("cors");
 
 const allowedOrigins = [
-  "https://trello-next-app14.vercel.app",
+  "trello-next-vert.vercel.app",
+  "trello-next-git-main-rahulmauryaas-projects.vercel.app",
+  "trello-next-139zks25e-rahulmauryaas-projects.vercel.app",
   "http://localhost:3000",
 ];
 
