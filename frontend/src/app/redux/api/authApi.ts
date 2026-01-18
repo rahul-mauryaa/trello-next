@@ -11,16 +11,13 @@ const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT;
 
 const baseQuery = fetchBaseQuery({
   baseUrl,
-  // prepareHeaders: (headers) => {
-  //   if (localStorage.getItem("token")) {
-  //     const { accessToken } = JSON.parse(
-  //       localStorage.getItem("token") as string
-  //     );
-  //     headers.set("Authorization", `Bearer ${accessToken}`);
-  //   }
-  //   return headers;
-  // },
+  credentials: "include",
+  prepareHeaders: (headers) => {
+    headers.set("Content-Type", "application/json");
+    return headers;
+  },
 });
+
 
 const authApi = createApi({
   baseQuery,

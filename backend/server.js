@@ -12,40 +12,36 @@ const allowedOrigins = [
   "http://localhost:3000",
 ];
 
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Postman / server requests
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    console.log("❌ Blocked by CORS:", origin);
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
 const app = express();
 
-// ✅ Proper CORS for Vercel + cookies
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // ✅ allow server-to-server / Postman requests
-      if (!origin) return callback(null, true);
+app.use(cors(corsOptions));
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        console.log("Blocked by CORS:", origin);
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// ✅ Preflight (OPTIONS) handle
-app.options("*", cors());
+// ✅ IMPORTANT: handle preflight with SAME cors options
+app.options("*", cors(corsOptions));
 
 app.use(cookieParser());
 app.use(express.json());
 
-// ✅ DB connect
 connectDb();
 
-app.get("/", (req, res) => {
-  res.send("API running ✅");
-});
+app.get("/", (req, res) => res.send("API running ✅"));
 
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/bords", require("./routes/bordsRoutes"));
@@ -54,5 +50,4 @@ app.use("/api/cards", require("./routes/cardRoutes"));
 
 app.use(errorHandler);
 
-// ✅ IMPORTANT: export app for Vercel
 module.exports = app;

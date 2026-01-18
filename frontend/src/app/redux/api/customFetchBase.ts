@@ -7,22 +7,27 @@ import {
 import { Mutex } from "async-mutex";
 import { deleteCookie, getCookie } from "cookies-next";
 import { logout } from "../slice/authSlice";
-//   import { logout } from "@/redux/features/authSlice";
-// import config from "@/config/default";
-
-// const baseUrl = config.API_ENDPOINT;
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT;
-// Create a new mutex
+
 const mutex = new Mutex();
 
 const baseQuery = fetchBaseQuery({
   baseUrl,
+
+  // ✅ IMPORTANT (Fix CORS + cookies)
+  credentials: "include",
+
   prepareHeaders: (headers) => {
-    if (getCookie("token")) {
-      const { accessToken } = JSON.parse(getCookie("token") as string);
+    headers.set("Content-Type", "application/json");
+
+    const token = getCookie("token");
+    if (token) {
+      const { accessToken } = JSON.parse(token as string);
       headers.set("Authorization", `Bearer ${accessToken}`);
     }
+
+    return headers; // ✅ MUST return headers
   },
 });
 
@@ -31,9 +36,8 @@ const customFetchBase: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  // wait until the mutex is available without locking it
   await mutex.waitForUnlock();
-  let result = await baseQuery(args, api, extraOptions);
+  const result = await baseQuery(args, api, extraOptions);
 
   if ((result.error?.data as any)?.message === "User is not authorized") {
     api.dispatch(logout());
